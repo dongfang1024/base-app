@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!-- 属性文件:在properties文件中找到对应的配置项 -->
+    <springProperty scope="context" name="logging.path" source="logging.path"/>
+    <contextName>projectName</contextName>
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--日志输出格式：
+                %yellow, %red, %highlight => 配色
+                %d => 日期，
+                %thread => 线程名，
+                %-5level => 级别从左显示5个字符宽度
+                %logger{50} => logger名字最长50个字符，否则按照句点分割。
+                %msg => 日志消息，
+                %n => 换行符
+            -->
+            <pattern>%yellow(%d{yyyy-MM-dd HH:mm:ss}) %red([%thread]) %highlight(%-5level) %cyan(%logger{50}) - %magenta(%msg) %n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--根据日志级别分离日志，分别输出到不同的文件-->
+    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--按时间保存日志 修改格式可以按小时、按天、月来保存-->
+            <!--%d{yyyy-MM-dd-HH-mm-ss}.log%i.gz按照秒进行归档，gz代表压缩, %i表示如果按照大小拆分则按照0,1,2,3,4这样命名文件-->
+            <fileNamePattern>${logging.path}/projectName.info.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <!--保存时长-->
+            <MaxHistory>90</MaxHistory>
+            <!--文件大小-->
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n
+            </pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--按时间保存日志 修改格式可以按小时、按天、月来保存-->
+            <!--%d{yyyy-MM-dd-HH-mm-ss}.log%i.gz按照秒进行归档，gz代表压缩, %i表示如果按照大小拆分则按照0,1,2,3,4这样命名文件-->
+            <fileNamePattern>${logging.path}/projectName.error.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <!--天数-->
+            <MaxHistory>90</MaxHistory>
+            <!--文件大小-->
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <!--异步日志, 控制台输出不用配异步，写文件的话配异步-->
+    <appender name="asyncFileInfoLog" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="fileInfoLog"/>
+    </appender>
+
+    <appender name="asyncFileErrorLog" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="fileErrorLog"/>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="asyncFileInfoLog"/>
+        <appender-ref ref="asyncFileErrorLog"/>
+        <!--生产环境可以去掉consoleLog, 提升性能-->
+        <appender-ref ref="consoleLog"/>
+    </root>
+
+    <!--logger的使用-->
+    <!--    <logger name="com.mycompany.myapp" level="debug" />-->
+
+    <!--不同的模块，不同的Appender-->
+    <!--    <logger name="xiaojia" level="INFO" additivity="true">-->
+    <!--        <appender-ref ref="CLASS-APPENDER" />-->
+    <!--    </logger>-->
+
+</configuration>
