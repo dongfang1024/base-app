@@ -60,4 +60,7 @@ public class QuickSortTest {
         quickSort(arr, start, low -1);
         quickSort(arr, low + 1, end);
     }
+
+
+    private String str="111";
 }
