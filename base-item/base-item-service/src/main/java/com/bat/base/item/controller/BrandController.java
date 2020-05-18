@@ -2,12 +2,14 @@ package com.bat.base.item.controller;
 
 import com.bat.base.item.pojo.Brand;
 import com.bat.base.item.service.BrandService;
+import com.bat.common.pojo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +29,31 @@ public class BrandController {
         }
         return ResponseEntity.ok(brandList);
     }
+
+    /***
+     * 根据查询条件，分页并排序查询品牌
+     * @param key
+     * @param page
+     * @param rows
+     * @param orderBy
+     * @param desc
+     * @return
+     */
+    @GetMapping("page")
+    public ResponseEntity<PageResult<Brand>> pageQueryBrands(
+            @RequestParam(value ="key", required = false)String key,
+            @RequestParam(value="page", defaultValue = "1")Integer page,
+            @RequestParam(value="rows", defaultValue = "10")Integer rows,
+            @RequestParam(value = "orderBy", required = false)String orderBy,
+            @RequestParam(value="desc", required = false)Boolean desc
+    ){
+        PageResult<Brand> result = this.brandService.pageQueryBrands(key, page, rows, orderBy, desc);
+        if(CollectionUtils.isEmpty(result.getItems())){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
 
     public void bubbleSort(int[] arr){
         System.out.println("冒泡排序");

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Controller
 @RequestMapping("category")
@@ -37,6 +39,30 @@ public class CategoryController {
         }
         logger.info("queryCategoriesByPid 结束");
         return ResponseEntity.ok(categoryList);
+    }
+
+    public void test(){
+        HashSet<String> set = new HashSet<>();
+    }
+
+    private static AtomicInteger num = new AtomicInteger(0);
+
+    public static void main(String[] args) throws Exception{
+
+        for(int j=0; j<2; j++){
+            new Thread(()->{
+                logger.info("线程{}开始了", logger.getName());
+
+                for(int i=0; i<10000; i++){
+                    num.incrementAndGet();
+                }
+
+                logger.info("线程{}结束了", logger.getName());
+            }).start();
+
+        }
+        Thread.sleep(2000);
+        System.out.println(num);
     }
 
 
