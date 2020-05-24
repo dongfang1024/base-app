@@ -21,3 +21,6 @@ logging:
   level:
     root: info
   path: ./logs
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

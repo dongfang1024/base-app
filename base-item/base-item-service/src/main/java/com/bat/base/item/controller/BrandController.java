@@ -3,23 +3,38 @@ package com.bat.base.item.controller;
 import com.bat.base.item.pojo.Brand;
 import com.bat.base.item.service.BrandService;
 import com.bat.common.pojo.PageResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
 @Controller
 @RequestMapping("brand")
+@Slf4j
 public class BrandController {
 
     @Autowired
     private BrandService brandService;
+
+    @PostMapping
+    public ResponseEntity<Void> addBrand(Brand brand, @RequestParam("cids")List<Long> cids){
+        try{
+            log.info("addBrand，parameter：{} , {}",brand, cids);
+            this.brandService.addBrand(brand, cids);
+        }catch (Exception e){
+            log.info("addBrand failure");
+            return ResponseEntity.badRequest().build();
+        }
+        log.info("addBrand success");
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("selectAll")
     public ResponseEntity<List<Brand>> selectAll(){
